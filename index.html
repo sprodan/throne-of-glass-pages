@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Throne of Glass — Progress</title>
+  <style>
+    :root {
+      --bg1: #0f1021;
+      --bg2: #1b1d3a;
+      --card: rgba(255, 255, 255, 0.08);
+      --text: #f7f7ff;
+      --muted: #b7b9d3;
+      --accent: #9f7aea;
+      --accent2: #63b3ed;
+      --gold: #f6d365;
+      --green: #68d391;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at top right, #2a2f64 0%, var(--bg1) 45%, #090a14 100%);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .wrap {
+      width: min(900px, 100%);
+      background: linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 24px;
+      padding: 28px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+
+    .title {
+      margin: 0 0 4px;
+      font-size: clamp(24px, 4vw, 38px);
+      letter-spacing: .4px;
+    }
+
+    .subtitle {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .name {
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .percent {
+      font-weight: 800;
+      font-size: 16px;
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.16);
+    }
+
+    .bar {
+      height: 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.15);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .fill {
+      height: 100%;
+      border-radius: inherit;
+      width: 0;
+      transition: width 900ms cubic-bezier(.22,.9,.26,1);
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 20px rgba(99,179,237,.4);
+    }
+
+    .card.me .fill { background: linear-gradient(90deg, #f093fb, #f5576c); }
+    .card.eca .fill { background: linear-gradient(90deg, #667eea, #764ba2); }
+    .card.anastasia .fill { background: linear-gradient(90deg, #f6d365, #fda085); }
+
+    .legend {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .winner {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .avg {
+      color: var(--green);
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1 class="title">📚 Throne of Glass — Reading Progress</h1>
+    <p class="subtitle">Ваш мини-дэшборд по книге ✨</p>
+
+    <section class="list" id="progressList"></section>
+
+    <div class="legend" id="stats"></div>
+  </main>
+
+  <script>
+    const readers = [
+      { id: 'me', name: 'Didina', progress: 10 },
+      { id: 'eca', name: 'Eca', progress: 30 },
+      { id: 'anastasia', name: '@AnastasiaCulacov', progress: 100 }
+    ];
+
+    const list = document.getElementById('progressList');
+    const stats = document.getElementById('stats');
+
+    readers.forEach((r) => {
+      const card = document.createElement('article');
+      card.className = `card ${r.id}`;
+      card.innerHTML = `
+        <div class="row">
+          <div class="name">${r.name}</div>
+          <div class="percent">${r.progress}%</div>
+        </div>
+        <div class="bar">
+          <div class="fill" data-progress="${r.progress}"></div>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.fill').forEach((el) => {
+        el.style.width = `${el.dataset.progress}%`;
+      });
+    });
+
+    const leader = [...readers].sort((a, b) => b.progress - a.progress)[0];
+    const avg = Math.round(readers.reduce((s, r) => s + r.progress, 0) / readers.length);
+
+    stats.innerHTML = `
+      <span>🏆 Лидирует: <span class="winner">${leader.name}</span></span>
+      <span>📈 Средний прогресс: <span class="avg">${avg}%</span></span>
+    `;
+  </script>
+</body>
+</html>
